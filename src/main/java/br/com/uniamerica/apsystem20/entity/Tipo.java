@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Tipos", schema = "public")
+@Table(name = "tipos", schema = "public")
 public class Tipo extends AbstractEntity{
     @Getter @Setter
-    @Column(name = "nomeTipo", unique = true, length = 100)
+    @Column(name = "nome_tipo", unique = true, length = 100)
     private String nomeTipo;
 }

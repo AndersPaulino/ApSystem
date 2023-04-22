@@ -7,17 +7,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Fornecedores", schema = "public")
+@Table(name = "fornecedores", schema = "public")
 public class Fornecedor extends AbstractEntity{
     @Getter @Setter
-    @Column(name = "nomeFornecedor", unique = true, length = 50)
+    @Column(name = "nome_fornecedor", unique = true, length = 50)
     private String nomeFornecedor;
 
     @Getter @Setter
-    @Column(name = "telefoneFornecedor", length = 17)
+    @Column(name = "telefone_fornecedor", length = 17)
     private String telefoneFornecedor;
 
     @Getter @Setter
-    @Column(name = "emailFornecedor", length = 50)
+    @Column(name = "email_fornecedor", length = 50)
     private String email;
 }

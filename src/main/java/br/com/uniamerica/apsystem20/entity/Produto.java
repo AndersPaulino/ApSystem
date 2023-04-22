@@ -10,21 +10,21 @@ import lombok.Setter;
 public class Produto extends AbstractEntity{
 
     @Getter @Setter
-    @Column(name = "nomeProduto", unique = true, length = 50)
+    @Column(name = "nome_produto", unique = true, length = 50)
     private String nomeProduto;
 
     @Getter @Setter
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "tipoProduto")
+    @JoinColumn(name = "tipo_produto")
     private Tipo tipo;
 
     @Getter @Setter
-    @Column(name = "codigoProduto", unique = true)
+    @Column(name = "codigo_produto", unique = true)
     private String codigoProduto;
 
     @Getter @Setter
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "fornecedoresDoProduto")
+    @JoinColumn(name = "fornecedores_do_produto")
     private Fornecedor fornecedor;
 
     @Getter @Setter

@@ -8,19 +8,19 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "Estoques", schema = "public")
+@Table(name = "estoques", schema = "public")
 public class Estoque extends AbstractEntity{
     @Getter @Setter
-    @Column(name = "nomeEstoque", unique = true, length = 50)
+    @Column(name = "nome_estoque", unique = true, length = 50)
     private String nomeEstoque;
 
     @Getter @Setter
-    @Column(name = "descricaoEstoque", length = 250)
+    @Column(name = "descricao_estoque", length = 250)
     private String descricaoEstoque;
 
     @Getter @Setter
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "produtoEstoque",
+    @JoinTable(name = "produto_estoque",
         uniqueConstraints = @UniqueConstraint(
                 columnNames = {
                         "estoque.id",
