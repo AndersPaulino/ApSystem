@@ -47,7 +47,7 @@ public class TipoController {
         return ResponseEntity.ok().body(tipos);
     }
     @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody Tipo tipo {
+    public ResponseEntity<?> cadastrar(@RequestBody Tipo tipo ){
         this.tipoRepository.save(tipo);
         return ResponseEntity.ok().body("Registro cadastrado com sucesso");
     }
