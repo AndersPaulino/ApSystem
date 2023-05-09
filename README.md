@@ -14,4 +14,4 @@
 
 ## Como executar o projeto
 
-[Inicio](#ApStock)<br>
+[Inicio](#--apstock-)<br>
