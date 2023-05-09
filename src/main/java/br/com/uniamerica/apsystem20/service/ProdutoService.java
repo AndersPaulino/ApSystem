@@ -35,7 +35,6 @@ public class ProdutoService {
 
         if(id.equals(produto.getId()) && !this.produtoRepository.findById(id).isEmpty()){
             this.validarProduto(produto);
-
             this.produtoRepository.save(produto);
         }
         else{
