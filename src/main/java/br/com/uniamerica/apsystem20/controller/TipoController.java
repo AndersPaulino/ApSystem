@@ -1,7 +1,9 @@
 package br.com.uniamerica.apsystem20.controller;
 
+import br.com.uniamerica.apsystem20.entity.Estoque;
 import br.com.uniamerica.apsystem20.entity.Produto;
 import br.com.uniamerica.apsystem20.entity.Tipo;
+import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
 import br.com.uniamerica.apsystem20.repository.TipoRepository;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,31 +12,45 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/tipo")
 public class TipoController {
+    private final TipoRepository tipoRepository;
+
     @Autowired
-    TipoRepository tipoRepository;
+    public TipoController(TipoRepository tipoRepository) {
+        this.tipoRepository = tipoRepository;
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tipo> findById(@PathVariable Long id){
-        return ResponseEntity.ok().body(this.tipoRepository.findById(id).orElse(new Tipo()));
+    public ResponseEntity<Tipo> findById(@PathVariable Long id) {
+        Optional<Tipo> tipo = tipoRepository.findById(id);
+        if (tipo.isPresent()) {
+            return ResponseEntity.ok().body(tipo.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
-    @GetMapping("/{nomeTipo}")
-    public ResponseEntity<?> findByNomeTipo(@PathVariable String nomeTipo){
-        return ResponseEntity.ok().body(this.tipoRepository.findByNomeTipo(nomeTipo));
-    }
-
-    @GetMapping("/{ativo}")
-    public ResponseEntity<?> findByAtivo(@PathVariable boolean ativo){
-        List<Tipo> tipos = this.tipoRepository.findByAtivo(ativo);
-
+    @GetMapping("/nome/{nomeTipo}")
+    public ResponseEntity<?> findByNomeTipo(@PathVariable String nomeTipo) {
+        List<Tipo> tipos = tipoRepository.findByNomeTipo(nomeTipo);
         if (tipos.isEmpty()) {
             return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok().body(tipos);
         }
+    }
 
-        return ResponseEntity.ok().body(tipos);
+    @GetMapping("/ativo/{ativo}")
+    public ResponseEntity<?> findByAtivo(@PathVariable boolean ativo) {
+        List<Tipo> tipos = tipoRepository.findByAtivo(ativo);
+        if (tipos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok().body(tipos);
+        }
     }
     @GetMapping
     public ResponseEntity<?> findAll() {
@@ -52,12 +68,18 @@ public class TipoController {
         return ResponseEntity.ok().body("Registro cadastrado com sucesso");
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable final @NotNull Long id, @RequestBody final Tipo tipo) {
-        if (id.equals(tipo.getId()) && !this.tipoRepository.findById(id).isEmpty()) {
-            this.tipoRepository.save(tipo);
+    public ResponseEntity<String> atualizar(@PathVariable Long id, @RequestBody Tipo tipo) {
+        Optional<Tipo> tipoExistente = tipoRepository.findById(id);
+
+        if (tipoExistente.isPresent()) {
+            Tipo tipoAtualizado = tipoExistente.get();
+            tipoAtualizado.setNomeTipo(tipo.getNomeTipo());
+
+            tipoRepository.save(tipoAtualizado);
+
+            return ResponseEntity.ok().body("Registro atualizado com sucesso!");
         } else {
-            return ResponseEntity.badRequest().body("Id nao foi encontrado");
+            return ResponseEntity.badRequest().body("Id invalido!");
         }
-        return ResponseEntity.ok().body("Registro atualizado com sucesso");
     }
 }

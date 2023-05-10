@@ -10,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface TipoRepository extends JpaRepository<Tipo, Long> {
-    @Query(value = "From Tipo where nomeTIpo = :nomeTipo" ,nativeQuery = true)
+    @Query(value = "From Tipo where nomeTipo = :nomeTipo")
     List<Tipo> findByNomeTipo(@Param("nomeTipo") final String nomeTipo);
 
-    @Query(value = "From Tipo where ativo = :ativo",nativeQuery = true)
+    @Query(value = "From Tipo where ativo = :ativo")
     List<Tipo> findByAtivo(@Param("ativo") final boolean ativo);
 }
