@@ -1,11 +1,7 @@
 package br.com.uniamerica.apsystem20.controller;
 
-import br.com.uniamerica.apsystem20.entity.Estoque;
-import br.com.uniamerica.apsystem20.entity.Produto;
 import br.com.uniamerica.apsystem20.entity.Tipo;
-import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
 import br.com.uniamerica.apsystem20.repository.TipoRepository;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

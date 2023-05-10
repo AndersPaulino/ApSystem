@@ -10,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface FornecedorRepository extends JpaRepository<Fornecedor, Long> {
-    @Query(value = "From Fornecedor where nomeFornecedor = :nomeFornecedor" ,nativeQuery = true)
+    @Query(value = "From Fornecedor where nomeFornecedor = :nomeFornecedor")
     List<Fornecedor> findByNomeFornecedor(@Param("nomeFornecedor") final String nomeFornecedor);
 
-    @Query(value = "From Fornecedor where ativo = :ativo",nativeQuery = true)
+    @Query(value = "From Fornecedor where ativo = :ativo")
     List<Fornecedor> findByAtivo(@Param("ativo") final boolean ativo);
 }

@@ -1,9 +1,6 @@
 package br.com.uniamerica.apsystem20.controller;
 
-import br.com.uniamerica.apsystem20.entity.Estoque;
-import br.com.uniamerica.apsystem20.entity.Fornecedor;
 import br.com.uniamerica.apsystem20.entity.Produto;
-import br.com.uniamerica.apsystem20.repository.EstoqueRepository;
 import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

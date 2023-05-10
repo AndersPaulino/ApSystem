@@ -1,9 +1,7 @@
 package br.com.uniamerica.apsystem20.controller;
 
 import br.com.uniamerica.apsystem20.entity.Estoque;
-import br.com.uniamerica.apsystem20.entity.Fornecedor;
 import br.com.uniamerica.apsystem20.repository.EstoqueRepository;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
