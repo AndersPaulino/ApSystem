@@ -8,35 +8,38 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.Optional;
+
 @Service
 public class EstoqueService {
 
+    private final EstoqueRepository estoqueRepository;
+
     @Autowired
-    private EstoqueRepository estoqueRepository;
-
-    public void validarEstoque(final Estoque estoque){
-
-        Assert.isTrue(estoque.getNomeEstoque() != null,
-                "Nome do estoque nao informado");
-
+    public EstoqueService(EstoqueRepository estoqueRepository) {
+        this.estoqueRepository = estoqueRepository;
     }
 
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public void cadastrar(final Estoque estoque){
-        this.validarEstoque(estoque);
-        this.estoqueRepository.save(estoque);
+    public void validarEstoque(final Estoque estoque) {
+        Assert.isTrue(estoque.getNomeEstoque() != null, "Nome do estoque não informado");
     }
 
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public void atualizar(final Long id, final Estoque estoque){
+    @Transactional(rollbackFor = Exception.class)
+    public void cadastrar(final Estoque estoque) {
+        validarEstoque(estoque);
+        estoqueRepository.save(estoque);
+    }
 
-        if(id.equals(estoque.getId()) && !this.estoqueRepository.findById(id).isEmpty()){
-            this.validarEstoque(estoque);
-            this.estoqueRepository.save(estoque);
-        }
-        else{
-            throw new RuntimeException("Id nao encontrado.");
-        }
+    @Transactional(rollbackFor = Exception.class)
+    public void atualizar(final Long id, final Estoque estoque) {
+        Optional<Estoque> estoqueExistente = estoqueRepository.findById(id);
 
+        if (estoqueExistente.isPresent() && id.equals(estoque.getId())) {
+            validarEstoque(estoque);
+            estoqueRepository.save(estoque);
+        } else {
+            throw new RuntimeException("ID não encontrado");
+        }
     }
 }
+

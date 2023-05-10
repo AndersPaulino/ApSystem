@@ -20,8 +20,17 @@ public abstract class AbstractEntity {
     @Column(name = "registro", nullable = false)
     private LocalDateTime registro;
     @Getter @Setter
-    @Column(name = "atualizar", nullable = false)
+    @Column(name = "atualizar")
     private LocalDateTime atualizar;
 
+    @PrePersist
+    private void prePersist(){
+        this.registro = LocalDateTime.now();
+        this.ativo = true;
+    }
+    @PreUpdate
+    private void preUpdate(){
+        this.atualizar = LocalDateTime.now();
+    }
 
 }
