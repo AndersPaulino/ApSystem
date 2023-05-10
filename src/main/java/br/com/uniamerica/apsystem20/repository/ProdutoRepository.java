@@ -9,13 +9,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
-    @Query(value = "From Produto where nomeProduto = :nomeProduto",nativeQuery = true)
+    @Query(value = "From Produto where nomeProduto = :nomeProduto")
     List<Produto> findByNomeProduto(@Param("nomeProduto") String nomeProduto);
 
-    @Query(value = "From Produto where ativo = :ativo" ,nativeQuery = true)
+    @Query(value = "From Produto where ativo = :ativo")
     List<Produto> findByAtivo(@Param("ativo") final boolean ativo);
 
-    @Query(value = "From Produto where codigoProduto = :codigoProduto",nativeQuery = true)
+    @Query(value = "From Produto where codigoProduto = :codigoProduto")
     List<Produto> findByCodigoProduto(@Param("codigoProduto") String codigoProduto);
 
     /*@Query(value = "From Produto produto where produto.tipoProdutoId = :tipoProdutoId",nativeQuery = true)

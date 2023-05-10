@@ -84,6 +84,4 @@ public class EstoqueController {
             return ResponseEntity.badRequest().body("Id invalido!");
         }
     }
-
-
 }
