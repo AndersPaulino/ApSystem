@@ -28,6 +28,21 @@ public class FornecedorService {
             throw new IllegalArgumentException("E-mail do fornecedor inválido");
         }
     }
+
+    public void validarFornecedorCadastrado(final Fornecedor fornecedor) {
+        String telefone = fornecedor.getTelefoneFornecedor();
+
+        // Verificar se o telefone contém apenas números
+        if (!telefone.matches("\\d+")) {
+            throw new IllegalArgumentException("Telefone do fornecedor inválido");
+        }
+
+        if (!fornecedor.getEmail().contains("@")) {
+            throw new IllegalArgumentException("E-mail do fornecedor inválido");
+        }
+    }
+
+
     public Optional<Fornecedor> findById(Long id) {
         return fornecedorRepository.findById(id);
     }
@@ -51,7 +66,7 @@ public class FornecedorService {
     }
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     public void atualizarFornecedor(Long id, Fornecedor fornecedor) {
-        validarFornecedor(fornecedor);
+        validarFornecedorCadastrado(fornecedor);
         Optional<Fornecedor> fornecedorExistente = fornecedorRepository.findById(id);
 
         if (fornecedorExistente.isPresent()) {
