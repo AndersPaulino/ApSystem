@@ -82,4 +82,6 @@ public class FornecedorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
         }
     }
+
+
 }
