@@ -2,7 +2,9 @@ package br.com.uniamerica.apsystem20.controller;
 
 import br.com.uniamerica.apsystem20.entity.Tipo;
 import br.com.uniamerica.apsystem20.repository.TipoRepository;
+import br.com.uniamerica.apsystem20.service.TipoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +15,13 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/api/tipo")
 public class TipoController {
+    private final TipoService tipoService;
     private final TipoRepository tipoRepository;
-
     @Autowired
-    public TipoController(TipoRepository tipoRepository) {
+    public TipoController(TipoService tipoService, TipoRepository tipoRepository) {
+        this.tipoService = tipoService;
         this.tipoRepository = tipoRepository;
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Tipo> findById(@PathVariable Long id) {
         Optional<Tipo> tipo = tipoRepository.findById(id);
@@ -60,22 +62,22 @@ public class TipoController {
     }
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Tipo tipo ){
-        this.tipoRepository.save(tipo);
-        return ResponseEntity.ok().body("Registro cadastrado com sucesso");
+        try {
+            tipoService.cadastrar(tipo);
+            return ResponseEntity.ok().body("Registro cadastrado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     @PutMapping("/{id}")
     public ResponseEntity<String> atualizar(@PathVariable Long id, @RequestBody Tipo tipo) {
-        Optional<Tipo> tipoExistente = tipoRepository.findById(id);
-
-        if (tipoExistente.isPresent()) {
-            Tipo tipoAtualizado = tipoExistente.get();
-            tipoAtualizado.setNomeTipo(tipo.getNomeTipo());
-
-            tipoRepository.save(tipoAtualizado);
-
+        try {
+            tipoService.atualizar(id, tipo);
             return ResponseEntity.ok().body("Registro atualizado com sucesso!");
-        } else {
-            return ResponseEntity.badRequest().body("Id invalido!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
         }
     }
 }

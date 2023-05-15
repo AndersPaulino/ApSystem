@@ -17,15 +17,26 @@ public class FornecedorService {
     @Autowired
     private FornecedorRepository fornecedorRepository;
     public void validarFornecedor(final Fornecedor fornecedor) {
-        Assert.notNull(fornecedor.getNomeFornecedor(), "Nome do fornecedor não informado");
-        Assert.notNull(fornecedor.getTelefoneFornecedor(), "Telefone do fornecedor não informado");
-
         if (fornecedor.getEmail().isEmpty()) {
             throw new IllegalArgumentException("E-mail do fornecedor não informado");
         }
-
         if (!fornecedor.getEmail().contains("@")) {
             throw new IllegalArgumentException("E-mail do fornecedor inválido");
+        }
+        if (fornecedor.getTelefoneFornecedor().isEmpty()){
+            throw new IllegalArgumentException("Telefone do fornecedor não informado");
+        }
+        if (!fornecedor.getTelefoneFornecedor().matches("\\d+")) {
+            throw new IllegalArgumentException("Telefone do fornecedor inválido");
+        }
+        if (fornecedor.getNomeFornecedor().isEmpty()){
+            throw new IllegalArgumentException("Nome do fornecedor não informado");
+        }
+        if (!fornecedor.getNomeFornecedor().matches("[a-zA-Z ]+")) {
+            throw new IllegalArgumentException("Nome do fornecedor inválido");
+        }
+        if (fornecedor.getNomeFornecedor() == null && fornecedor.getTelefoneFornecedor() == null && fornecedor.getEmail() == null) {
+            throw new IllegalArgumentException("Nenhum campo do fornecedor informado");
         }
     }
 
