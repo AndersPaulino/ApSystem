@@ -2,7 +2,10 @@ package br.com.uniamerica.apsystem20.controller;
 
 import br.com.uniamerica.apsystem20.entity.Estoque;
 import br.com.uniamerica.apsystem20.repository.EstoqueRepository;
+import br.com.uniamerica.apsystem20.service.EstoqueService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +16,15 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/api/estoque")
 public class EstoqueController {
+    private final EstoqueService estoqueService;
     private final EstoqueRepository estoqueRepository;
 
     @Autowired
-    public EstoqueController(EstoqueRepository estoqueRepository) {
+    public EstoqueController(EstoqueService estoqueService, EstoqueRepository estoqueRepository) {
+        this.estoqueService = estoqueService;
         this.estoqueRepository = estoqueRepository;
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Estoque> findById(@PathVariable Long id) {
@@ -60,26 +66,24 @@ public class EstoqueController {
         }
     }
     @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody final Estoque estoque) {
-        this.estoqueRepository.save(estoque);
-        return ResponseEntity.ok().body("Registro cadastrado com sucesso");
+    public ResponseEntity<?> cadastrar(@RequestBody Estoque estoque) {
+        try {
+            estoqueService.cadastrar(estoque);
+            return ResponseEntity.ok().body("Registro cadastrado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizar(@PathVariable Long id, @RequestBody Estoque estoque) {
-        Optional<Estoque> estoqueExistente = estoqueRepository.findById(id);
-
-        if (estoqueExistente.isPresent()) {
-            Estoque estoqueAtualizado = estoqueExistente.get();
-            estoqueAtualizado.setDescricaoEstoque(estoque.getDescricaoEstoque());
-            estoqueAtualizado.setNomeEstoque(estoque.getNomeEstoque());
-            estoqueAtualizado.setProdutoList(estoque.getProdutoList());
-
-            estoqueRepository.save(estoqueAtualizado);
-
+    public ResponseEntity<?> atualizar(@PathVariable @NotNull Long id, @RequestBody Estoque estoque) {
+        try {
+            estoqueService.atualizar(id, estoque);
             return ResponseEntity.ok().body("Registro atualizado com sucesso!");
-        } else {
-            return ResponseEntity.badRequest().body("Id invalido!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
         }
     }
 }
