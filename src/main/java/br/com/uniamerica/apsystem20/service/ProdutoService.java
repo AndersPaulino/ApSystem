@@ -19,12 +19,18 @@ public class ProdutoService {
 
 
     public void validarProduto(final Produto produto){
-
-        Assert.isTrue(produto.getNomeProduto() != null,
-                "Nome do produto nao informado");
-
-        Assert.isTrue(produto.getCodigoProduto() != null,
-                "Codigo do produto nao informado");
+        if (produto.getNomeProduto() == null || produto.getNomeProduto().isEmpty()){
+            throw new IllegalArgumentException("Nome do Produto não informado");
+        }
+        if (!produto.getNomeProduto().matches("[a-zA-Z\\- ]+")) {
+            throw new IllegalArgumentException("Nome do Produto inválido");
+        }
+        if (produto.getCodigoProduto() == null || produto.getCodigoProduto().isEmpty()){
+            throw new IllegalArgumentException("Código do produto não informado");
+        }
+        if (!produto.getCodigoProduto().matches("\\d+")) {
+            throw new IllegalArgumentException("Código do Produto inválido");
+        }
     }
 
     public Optional<Produto> findById(Long id) {
@@ -51,14 +57,35 @@ public class ProdutoService {
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     public void atualizar(final Long id, final Produto produto){
+    validarProduto(produto);
+        Optional<Produto> produtoExistente = produtoRepository.findById(id);
 
-        if(id.equals(produto.getId()) && !this.produtoRepository.findById(id).isEmpty()){
-            this.validarProduto(produto);
-            this.produtoRepository.save(produto);
-        }
-        else{
-            throw new RuntimeException("Id nao encontrado.");
-        }
+        if (produtoExistente.isPresent()) {
+            Produto produtoAtualizado = produtoExistente.get();
 
+            if (produto.getNomeProduto() != null) {
+                produtoAtualizado.setNomeProduto(produto.getNomeProduto());
+            }
+
+            if (produto.getCodigoProduto() != null) {
+                produtoAtualizado.setCodigoProduto(produto.getCodigoProduto());
+            }
+
+            if (produto.getTipo() != null) {
+                produtoAtualizado.setTipo(produto.getTipo());
+            }
+
+            if (produto.getFornecedor() != null) {
+                produtoAtualizado.setFornecedor(produto.getFornecedor());
+            }
+
+            if (produto.getEstoque() != null) {
+                produtoAtualizado.setEstoque(produto.getEstoque());
+            }
+
+            produtoRepository.save(produtoAtualizado);
+        } else {
+            throw new IllegalArgumentException("Id inválido!");
+        }
     }
 }
