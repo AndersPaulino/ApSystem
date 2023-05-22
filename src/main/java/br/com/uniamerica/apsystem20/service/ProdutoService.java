@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class ProdutoService {
 
@@ -22,6 +25,22 @@ public class ProdutoService {
 
         Assert.isTrue(produto.getCodigoProduto() != null,
                 "Codigo do produto nao informado");
+    }
+
+    public Optional<Produto> findById(Long id) {
+        return produtoRepository.findById(id);
+    }
+
+    public List<Produto> findByNomeProduto(String nomeProduto) {
+        return produtoRepository.findByNomeProduto(nomeProduto);
+    }
+
+    public List<Produto> findByAtivo(boolean ativo) {
+        return produtoRepository.findByAtivo(ativo);
+    }
+
+    public List<Produto> findAll() {
+        return produtoRepository.findAll();
     }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)

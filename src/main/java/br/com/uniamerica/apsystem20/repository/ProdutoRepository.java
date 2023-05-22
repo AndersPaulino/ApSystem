@@ -7,6 +7,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     @Query(value = "From Produto where nomeProduto = :nomeProduto")
@@ -18,8 +20,10 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     @Query(value = "From Produto where codigoProduto = :codigoProduto")
     List<Produto> findByCodigoProduto(@Param("codigoProduto") String codigoProduto);
 
-    /*@Query(value = "From Produto produto where produto.tipoProdutoId = :tipoProdutoId",nativeQuery = true)
-    List<Produto> findByTipoProdutoId(@Param("tipoProdutoID") Long tipoProdutoId);*/
+    @Query(value = "FROM Produto produto WHERE produto.tipo.id = :tipoId")
+    List<Produto> findByTipoProduto(@Param("tipoId") Long tipoId);
+
+
 
 }
 

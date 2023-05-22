@@ -69,6 +69,17 @@ public class ProdutoController {
         }
     }
 
+    @GetMapping("/tipo/{tipoId}")
+    public ResponseEntity<?> findByTipoProduto(@PathVariable Long tipoId) {
+        List<Produto> produtos = produtoRepository.findByTipoProduto(tipoId);
+        if (produtos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok().body(produtos);
+        }
+    }
+
+
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody final Produto produto) {
         this.produtoRepository.save(produto);
