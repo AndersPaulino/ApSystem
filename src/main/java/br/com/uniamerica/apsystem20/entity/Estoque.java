@@ -18,21 +18,4 @@ public class Estoque extends AbstractEntity{
     @Column(name = "descricao_estoque", length = 250)
     private String descricaoEstoque;
 
-    @Getter @Setter
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "produto_estoque",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {
-                        "estoque.id",
-                        "produto.id"
-                }
-        ),
-         joinColumns = @JoinColumn(
-                 name = "estoque.id"
-         ),
-         inverseJoinColumns = @JoinColumn(
-                 name = "produto.id"
-         )
-    )
-    private List<Produto> produtoList;
 }

@@ -69,10 +69,6 @@ public class EstoqueService {
                 estoqueAtualizado.setDescricaoEstoque(estoque.getDescricaoEstoque());
             }
 
-            if (estoque.getProdutoList() != null) {
-                estoqueAtualizado.setProdutoList(estoque.getProdutoList());
-            }
-
             estoqueRepository.save(estoqueAtualizado);
         } else {
             throw new IllegalArgumentException("Id inválido!");
