@@ -1,5 +1,6 @@
 package br.com.uniamerica.apsystem20.repository;
 
+import br.com.uniamerica.apsystem20.entity.Estoque;
 import br.com.uniamerica.apsystem20.entity.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +24,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     @Query(value = "FROM Produto produto WHERE produto.tipo.id = :tipoId")
     List<Produto> findByTipoProduto(@Param("tipoId") Long tipoId);
 
-
+    @Query(value = "From Produto where estoque = :estoque")
+    List<Produto> findByEstoque(@Param("estoque")Estoque estoque);
 
 }
 

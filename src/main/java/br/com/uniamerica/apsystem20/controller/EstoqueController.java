@@ -1,7 +1,9 @@
 package br.com.uniamerica.apsystem20.controller;
 
 import br.com.uniamerica.apsystem20.entity.Estoque;
+import br.com.uniamerica.apsystem20.entity.Produto;
 import br.com.uniamerica.apsystem20.repository.EstoqueRepository;
+import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
 import br.com.uniamerica.apsystem20.service.EstoqueService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,13 @@ public class EstoqueController {
     private final EstoqueService estoqueService;
     private final EstoqueRepository estoqueRepository;
 
+    private final ProdutoRepository produtoRepository;
+
     @Autowired
-    public EstoqueController(EstoqueService estoqueService, EstoqueRepository estoqueRepository) {
+    public EstoqueController(EstoqueService estoqueService, EstoqueRepository estoqueRepository, ProdutoRepository produtoRepository) {
         this.estoqueService = estoqueService;
         this.estoqueRepository = estoqueRepository;
+        this.produtoRepository = produtoRepository;
     }
 
 
@@ -84,6 +89,21 @@ public class EstoqueController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletar(@PathVariable Long id) {
+        final Estoque estoque = this.estoqueRepository.findById(id).orElse(null);
+        if (estoque != null) {
+            List<Produto> produtosVinculados = this.produtoRepository.findByEstoque(estoque);
+            if (produtosVinculados.isEmpty()) {
+                this.estoqueRepository.delete(estoque);
+                return ResponseEntity.ok("Registro deletado com sucesso!");
+            } else {
+                return ResponseEntity.badRequest().body("Não é possível deletar o estoque, pois existem produtos vinculados a ele.");
+            }
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }
