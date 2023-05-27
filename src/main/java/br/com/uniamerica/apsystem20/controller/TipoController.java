@@ -1,6 +1,8 @@
 package br.com.uniamerica.apsystem20.controller;
 
+import br.com.uniamerica.apsystem20.entity.Produto;
 import br.com.uniamerica.apsystem20.entity.Tipo;
+import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
 import br.com.uniamerica.apsystem20.repository.TipoRepository;
 import br.com.uniamerica.apsystem20.service.TipoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,13 @@ import java.util.Optional;
 public class TipoController {
     private final TipoService tipoService;
     private final TipoRepository tipoRepository;
+
+    private final ProdutoRepository produtoRepository;
     @Autowired
-    public TipoController(TipoService tipoService, TipoRepository tipoRepository) {
+    public TipoController(TipoService tipoService, TipoRepository tipoRepository, ProdutoRepository produtoRepository) {
         this.tipoService = tipoService;
         this.tipoRepository = tipoRepository;
+        this.produtoRepository = produtoRepository;
     }
     @GetMapping("/{id}")
     public ResponseEntity<Tipo> findById(@PathVariable Long id) {
@@ -80,4 +85,20 @@ public class TipoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
         }
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletar(@PathVariable Long id) {
+        final Tipo tipo = this.tipoRepository.findById(id).orElse(null);
+        if (tipo != null) {
+            List<Produto> produtosVinculados = this.produtoRepository.findByTipo(tipo);
+            if (produtosVinculados.isEmpty()) {
+                this.tipoRepository.delete(tipo);
+                return ResponseEntity.ok("Registro deletado com sucesso!");
+            } else {
+                return ResponseEntity.badRequest().body("Não é possível deletar o tipo, pois existem produtos vinculados a ele.");
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
