@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 
 @Entity
 @Table(name = "Produtos", schema = "public")
@@ -31,4 +33,20 @@ public class Produto extends AbstractEntity{
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "estoqueDoProduto")
     private Estoque estoque;
+
+    @Getter @Setter
+    @Column(name = "quantidade_produto")
+    private int quantidade;
+
+    @Getter @Setter
+    @Column(name = "saida_produto")
+    private int saida;
+
+    @Getter @Setter
+    @Column(name = "valor_compra")
+    private BigDecimal valorCompra;
+
+    @Getter @Setter
+    @Column(name = "valor_venda")
+    private BigDecimal valorVenda;
 }
