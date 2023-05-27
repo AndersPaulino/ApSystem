@@ -1,7 +1,9 @@
 package br.com.uniamerica.apsystem20.controller;
 
 import br.com.uniamerica.apsystem20.entity.Fornecedor;
+import br.com.uniamerica.apsystem20.entity.Produto;
 import br.com.uniamerica.apsystem20.repository.FornecedorRepository;
+import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
 import br.com.uniamerica.apsystem20.service.FornecedorService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,13 @@ public class FornecedorController {
     private final FornecedorService fornecedorService;
     private final FornecedorRepository fornecedorRepository;
 
+    private final ProdutoRepository produtoRepository;
+
     @Autowired
-    public FornecedorController(FornecedorService fornecedorService, FornecedorRepository fornecedorRepository) {
+    public FornecedorController(FornecedorService fornecedorService, FornecedorRepository fornecedorRepository, ProdutoRepository produtoRepository) {
         this.fornecedorService = fornecedorService;
         this.fornecedorRepository = fornecedorRepository;
+        this.produtoRepository = produtoRepository;
     }
     @GetMapping("/{id}")
     public ResponseEntity<Fornecedor> findById(@PathVariable Long id) {
@@ -80,6 +85,21 @@ public class FornecedorController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletar(@PathVariable Long id) {
+        final Fornecedor fornecedor = this.fornecedorRepository.findById(id).orElse(null);
+        if (fornecedor != null) {
+            List<Produto> produtosVinculados = this.produtoRepository.findByFornecedor(fornecedor);
+            if (produtosVinculados.isEmpty()) {
+                this.fornecedorRepository.delete(fornecedor);
+                return ResponseEntity.ok("Registro deletado com sucesso!");
+            } else {
+                return ResponseEntity.badRequest().body("Não é possível deletar o fornecedor, pois existem produtos vinculados a ele.");
+            }
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }
