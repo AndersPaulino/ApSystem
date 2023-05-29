@@ -47,12 +47,12 @@ public class Produto extends AbstractEntity{
     private int saida;
 
     @Getter @Setter
-    @Digits(integer = 2, fraction = 9)
+    @Digits(integer = 9, fraction = 2)
     @Column(name = "valor_compra")
     private BigDecimal valorCompra;
 
     @Getter @Setter
-    @Digits(integer = 2, fraction = 9)
+    @Digits(integer = 9, fraction = 2)
     @Column(name = "valor_venda")
     private BigDecimal valorVenda;
 }
