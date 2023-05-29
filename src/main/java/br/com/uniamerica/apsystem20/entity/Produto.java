@@ -1,6 +1,8 @@
 package br.com.uniamerica.apsystem20.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,18 +37,22 @@ public class Produto extends AbstractEntity{
     private Estoque estoque;
 
     @Getter @Setter
+    @Max(value = 999999)
     @Column(name = "quantidade_produto")
     private int quantidade;
 
     @Getter @Setter
+    @Max(value = 999999)
     @Column(name = "saida_produto")
     private int saida;
 
     @Getter @Setter
+    @Digits(integer = 2, fraction = 9)
     @Column(name = "valor_compra")
     private BigDecimal valorCompra;
 
     @Getter @Setter
+    @Digits(integer = 2, fraction = 9)
     @Column(name = "valor_venda")
     private BigDecimal valorVenda;
 }
