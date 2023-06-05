@@ -2,6 +2,7 @@ package br.com.uniamerica.apsystem20.controller;
 
 import br.com.uniamerica.apsystem20.entity.Produto;
 import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
+import br.com.uniamerica.apsystem20.service.ProdutoService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,12 @@ import java.util.Optional;
 public class ProdutoController {
     private final ProdutoRepository produtoRepository;
 
+    private final ProdutoService produtoService;
+
     @Autowired
-    public ProdutoController(ProdutoRepository produtoRepository) {
+    public ProdutoController(ProdutoRepository produtoRepository, ProdutoService produtoService) {
         this.produtoRepository = produtoRepository;
+        this.produtoService = produtoService;
     }
 
     @GetMapping("/{id}")
@@ -82,24 +86,17 @@ public class ProdutoController {
 
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody final Produto produto) {
-        this.produtoRepository.save(produto);
+        this.produtoService.cadastrar(produto);
         return ResponseEntity.ok().body("Registro cadastrado com sucesso");
     }
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable final @NotNull Long id, @RequestBody final Produto produto) {
-        Optional<Produto> produtoExistente = produtoRepository.findById(id);
+        Optional<Produto> produtoExistente = produtoService.findById(id);
 
         if (produtoExistente.isPresent()) {
             Produto produtoAtualizado = produtoExistente.get();
-            produtoAtualizado.setNomeProduto(produto.getNomeProduto());
-            produtoAtualizado.setCodigoProduto(produto.getCodigoProduto());
-            produtoAtualizado.setAtualizar(produto.getAtualizar());
-            produtoAtualizado.setTipo(produto.getTipo());
-            produtoAtualizado.setEstoque(produto.getEstoque());
-            produtoAtualizado.setFornecedor(produto.getFornecedor());
-
             try {
-                produtoRepository.save(produtoAtualizado);
+                produtoService.atualizarProduto(id,produto);
                 return ResponseEntity.ok().body("Registro atualizado com sucesso!");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");

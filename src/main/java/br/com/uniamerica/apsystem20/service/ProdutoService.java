@@ -1,21 +1,34 @@
 package br.com.uniamerica.apsystem20.service;
 
 import br.com.uniamerica.apsystem20.entity.Produto;
+import br.com.uniamerica.apsystem20.entity.Tipo;
 import br.com.uniamerica.apsystem20.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProdutoService {
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+
+    private final ProdutoRepository produtoRepository;
+    private final EstoqueService estoqueService;
+    private final TipoService tipoService;
+    private final FornecedorService fornecedorService;
+
+    public ProdutoService(ProdutoRepository produtoRepository, EstoqueService estoqueService, TipoService tipoService, FornecedorService fornecedorService) {
+        this.produtoRepository = produtoRepository;
+        this.estoqueService = estoqueService;
+        this.tipoService = tipoService;
+        this.fornecedorService = fornecedorService;
+    }
 
 
     public void validarProduto(final Produto produto){
@@ -31,6 +44,14 @@ public class ProdutoService {
         if (!produto.getCodigoProduto().matches("\\d+")) {
             throw new IllegalArgumentException("Código do Produto inválido");
         }
+        if (produto.getSaida() == null){
+            produto.setSaida(0);
+        }
+        int quantidade = produto.getQuantidade() != null ? produto.getQuantidade() : 0;
+        int saida = produto.getSaida() != null ? produto.getSaida() : 0;
+        produto.setTotalProduto(quantidade - saida);
+        BigDecimal valorVenda = produto.getValorVenda() != null ? produto.getValorVenda() : BigDecimal.ZERO;
+        produto.setValorTotal(BigDecimal.valueOf(saida).multiply(valorVenda));
     }
 
     public Optional<Produto> findById(Long id) {
@@ -49,6 +70,40 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
+    public void validarProdutoCadastrado(final Produto produto) {
+        String codigo = produto.getCodigoProduto();
+        String nome = produto.getNomeProduto();
+        int saida = produto.getSaida();
+        int quantidade = produto.getQuantidade();
+
+        if (nome != null) {
+            // Verificar se o nome contém apenas letras maiúsculas, minúsculas e espaço
+            if (!nome.matches("[a-zA-Z\\- ]+")) {
+                throw new IllegalArgumentException("Nome do produto inválido");
+            }
+        }
+
+        if (codigo != null) {
+            // Verificar se o código contém apenas números
+            if (!codigo.matches("\\d+")) {
+                throw new IllegalArgumentException("Código do produto inválido");
+            }
+        }
+
+        if (saida != 0) {
+            int estoque = quantidade != 0 ? quantidade : 0;
+            int saidaProduto = saida != 0 ? saida : 0;
+            produto.setTotalProduto(estoque - saidaProduto);
+            BigDecimal valorVenda = produto.getValorVenda() != null ? produto.getValorVenda() : BigDecimal.ZERO;
+            produto.setValorTotal(BigDecimal.valueOf(saidaProduto).multiply(valorVenda));
+        }
+
+        if (nome == null && codigo == null && quantidade == 0 && saida == 0 && produto.getEstoque() == null && produto.getFornecedor() == null && produto.getTipo() == null) {
+            throw new IllegalArgumentException("Nenhum campo do produto informado");
+        }
+    }
+
+
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     public void cadastrar(final Produto produto){
         this.validarProduto(produto);
@@ -56,8 +111,8 @@ public class ProdutoService {
     }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public void atualizar(final Long id, final Produto produto){
-    validarProduto(produto);
+    public void atualizarProduto(final Long id, final Produto produto) {
+        validarProdutoCadastrado(produto);
         Optional<Produto> produtoExistente = produtoRepository.findById(id);
 
         if (produtoExistente.isPresent()) {
@@ -81,6 +136,10 @@ public class ProdutoService {
 
             if (produto.getEstoque() != null) {
                 produtoAtualizado.setEstoque(produto.getEstoque());
+            }
+
+            if (produto.getSaida() != null) {
+                produtoAtualizado.setSaida(produto.getSaida());
             }
 
             produtoRepository.save(produtoAtualizado);

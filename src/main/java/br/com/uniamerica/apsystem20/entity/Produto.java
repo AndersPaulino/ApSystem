@@ -39,12 +39,15 @@ public class Produto extends AbstractEntity{
     @Getter @Setter
     @Max(value = 999999)
     @Column(name = "quantidade_produto")
-    private int quantidade;
+    private Integer quantidade;
 
     @Getter @Setter
-    @Max(value = 999999)
     @Column(name = "saida_produto")
-    private int saida;
+    private Integer saida;
+
+    @Getter @Setter
+    @Column(name = "total_produtos")
+    private Integer totalProduto;
 
     @Getter @Setter
     @Digits(integer = 9, fraction = 2)
@@ -55,4 +58,9 @@ public class Produto extends AbstractEntity{
     @Digits(integer = 9, fraction = 2)
     @Column(name = "valor_venda")
     private BigDecimal valorVenda;
+
+    @Getter @Setter
+    @Digits(integer = 9, fraction = 2)
+    @Column(name = "valor_total_vendas")
+    private BigDecimal valorTotal;
 }
