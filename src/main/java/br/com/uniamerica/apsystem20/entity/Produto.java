@@ -36,5 +36,4 @@ public class Produto extends AbstractEntity{
     @JoinColumn(name = "estoqueDoProduto")
     private Estoque estoque;
 
-
 }

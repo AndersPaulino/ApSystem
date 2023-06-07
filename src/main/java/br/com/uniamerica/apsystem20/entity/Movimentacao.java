@@ -13,7 +13,8 @@ import java.math.BigDecimal;
 public class Movimentacao extends AbstractEntity{
 
     @Getter @Setter
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "produtos")
     private Produto produto;
 
     @Getter @Setter
