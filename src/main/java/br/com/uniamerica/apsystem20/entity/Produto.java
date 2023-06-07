@@ -36,31 +36,5 @@ public class Produto extends AbstractEntity{
     @JoinColumn(name = "estoqueDoProduto")
     private Estoque estoque;
 
-    @Getter @Setter
-    @Max(value = 999999)
-    @Column(name = "quantidade_produto")
-    private Integer quantidade;
 
-    @Getter @Setter
-    @Column(name = "saida_produto")
-    private Integer saida;
-
-    @Getter @Setter
-    @Column(name = "total_produtos")
-    private Integer totalProduto;
-
-    @Getter @Setter
-    @Digits(integer = 9, fraction = 2)
-    @Column(name = "valor_compra")
-    private BigDecimal valorCompra;
-
-    @Getter @Setter
-    @Digits(integer = 9, fraction = 2)
-    @Column(name = "valor_venda")
-    private BigDecimal valorVenda;
-
-    @Getter @Setter
-    @Digits(integer = 9, fraction = 2)
-    @Column(name = "valor_total_vendas")
-    private BigDecimal valorTotal;
 }

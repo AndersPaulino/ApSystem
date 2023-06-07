@@ -90,19 +90,14 @@ public class ProdutoController {
         return ResponseEntity.ok().body("Registro cadastrado com sucesso");
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable final @NotNull Long id, @RequestBody final Produto produto) {
-        Optional<Produto> produtoExistente = produtoService.findById(id);
-
-        if (produtoExistente.isPresent()) {
-            Produto produtoAtualizado = produtoExistente.get();
-            try {
-                produtoService.atualizarProduto(id,produto);
-                return ResponseEntity.ok().body("Registro atualizado com sucesso!");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
-            }
-        } else {
-            return ResponseEntity.badRequest().body("Id inválido!");
+    public ResponseEntity<?> atualizar(@PathVariable @NotNull Long id, @RequestBody Produto produto) {
+        try {
+            produtoService.atualizarProduto(id, produto);
+            return ResponseEntity.ok().body("Registro atualizado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
         }
     }
 

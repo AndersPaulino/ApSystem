@@ -44,14 +44,6 @@ public class ProdutoService {
         if (!produto.getCodigoProduto().matches("\\d+")) {
             throw new IllegalArgumentException("Código do Produto inválido");
         }
-        if (produto.getSaida() == null){
-            produto.setSaida(0);
-        }
-        int quantidade = produto.getQuantidade() != null ? produto.getQuantidade() : 0;
-        int saida = produto.getSaida() != null ? produto.getSaida() : 0;
-        produto.setTotalProduto(quantidade - saida);
-        BigDecimal valorVenda = produto.getValorVenda() != null ? produto.getValorVenda() : BigDecimal.ZERO;
-        produto.setValorTotal(BigDecimal.valueOf(saida).multiply(valorVenda));
     }
 
     public Optional<Produto> findById(Long id) {
@@ -70,39 +62,50 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
+    private void atualizarPropriedadesProduto(Produto produtoAtualizado, Produto produto) {
+        if (produto.getNomeProduto() != null) {
+            validarNomeProduto(produto.getNomeProduto());
+            produtoAtualizado.setNomeProduto(produto.getNomeProduto());
+        }
+
+        if (produto.getCodigoProduto() != null) {
+            validarCodigoProduto(produto.getCodigoProduto());
+            produtoAtualizado.setCodigoProduto(produto.getCodigoProduto());
+        }
+
+        if (produto.getTipo() != null) {
+            produtoAtualizado.setTipo(produto.getTipo());
+        }
+
+        if (produto.getFornecedor() != null) {
+            produtoAtualizado.setFornecedor(produto.getFornecedor());
+        }
+
+        if (produto.getEstoque() != null) {
+            produtoAtualizado.setEstoque(produto.getEstoque());
+        }
+    }
+
     public void validarProdutoCadastrado(final Produto produto) {
-        String codigo = produto.getCodigoProduto();
-        String nome = produto.getNomeProduto();
-        int saida = produto.getSaida();
-        int quantidade = produto.getQuantidade();
+        validarNomeProduto(produto.getNomeProduto());
+        validarCodigoProduto(produto.getCodigoProduto());
 
-        if (nome != null) {
-            // Verificar se o nome contém apenas letras maiúsculas, minúsculas e espaço
-            if (!nome.matches("[a-zA-Z\\- ]+")) {
-                throw new IllegalArgumentException("Nome do produto inválido");
-            }
-        }
-
-        if (codigo != null) {
-            // Verificar se o código contém apenas números
-            if (!codigo.matches("\\d+")) {
-                throw new IllegalArgumentException("Código do produto inválido");
-            }
-        }
-
-        if (saida != 0) {
-            int estoque = quantidade != 0 ? quantidade : 0;
-            int saidaProduto = saida != 0 ? saida : 0;
-            produto.setTotalProduto(estoque - saidaProduto);
-            BigDecimal valorVenda = produto.getValorVenda() != null ? produto.getValorVenda() : BigDecimal.ZERO;
-            produto.setValorTotal(BigDecimal.valueOf(saidaProduto).multiply(valorVenda));
-        }
-
-        if (nome == null && codigo == null && quantidade == 0 && saida == 0 && produto.getEstoque() == null && produto.getFornecedor() == null && produto.getTipo() == null) {
+        if (produto.getEstoque() == null && produto.getFornecedor() == null && produto.getTipo() == null) {
             throw new IllegalArgumentException("Nenhum campo do produto informado");
         }
     }
 
+    private void validarNomeProduto(String nome) {
+        if (nome != null && !nome.matches("[a-zA-Z\\- ]+")) {
+            throw new IllegalArgumentException("Nome do produto inválido");
+        }
+    }
+
+    private void validarCodigoProduto(String codigo) {
+        if (codigo != null && !codigo.matches("\\d+")) {
+            throw new IllegalArgumentException("Código do produto inválido");
+        }
+    }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     public void cadastrar(final Produto produto){
@@ -113,38 +116,15 @@ public class ProdutoService {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     public void atualizarProduto(final Long id, final Produto produto) {
         validarProdutoCadastrado(produto);
+
         Optional<Produto> produtoExistente = produtoRepository.findById(id);
-
-        if (produtoExistente.isPresent()) {
-            Produto produtoAtualizado = produtoExistente.get();
-
-            if (produto.getNomeProduto() != null) {
-                produtoAtualizado.setNomeProduto(produto.getNomeProduto());
-            }
-
-            if (produto.getCodigoProduto() != null) {
-                produtoAtualizado.setCodigoProduto(produto.getCodigoProduto());
-            }
-
-            if (produto.getTipo() != null) {
-                produtoAtualizado.setTipo(produto.getTipo());
-            }
-
-            if (produto.getFornecedor() != null) {
-                produtoAtualizado.setFornecedor(produto.getFornecedor());
-            }
-
-            if (produto.getEstoque() != null) {
-                produtoAtualizado.setEstoque(produto.getEstoque());
-            }
-
-            if (produto.getSaida() != null) {
-                produtoAtualizado.setSaida(produto.getSaida());
-            }
-
-            produtoRepository.save(produtoAtualizado);
-        } else {
+        if (!produtoExistente.isPresent()) {
             throw new IllegalArgumentException("Id inválido!");
         }
+
+        Produto produtoAtualizado = produtoExistente.get();
+        atualizarPropriedadesProduto(produtoAtualizado, produto);
+
+        produtoRepository.save(produtoAtualizado);
     }
 }
