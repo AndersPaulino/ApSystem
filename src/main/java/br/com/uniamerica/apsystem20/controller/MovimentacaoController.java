@@ -2,9 +2,11 @@ package br.com.uniamerica.apsystem20.controller;
 
 import br.com.uniamerica.apsystem20.entity.Fornecedor;
 import br.com.uniamerica.apsystem20.entity.Movimentacao;
+import br.com.uniamerica.apsystem20.entity.Tipo;
 import br.com.uniamerica.apsystem20.repository.MovimentacaoRepository;
 import br.com.uniamerica.apsystem20.service.MovimentacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +64,18 @@ public class MovimentacaoController {
             return ResponseEntity.ok().body("Registro cadastrado com sucesso!");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Movimentacao movimentacao) {
+        try {
+            movimentacaoService.atualizar(id, movimentacao);
+            return ResponseEntity.ok().body("Registro atualizado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o registro.");
         }
     }
 }

@@ -2,6 +2,7 @@ package br.com.uniamerica.apsystem20.service;
 
 import br.com.uniamerica.apsystem20.entity.Movimentacao;
 import br.com.uniamerica.apsystem20.entity.Produto;
+import br.com.uniamerica.apsystem20.entity.Tipo;
 import br.com.uniamerica.apsystem20.repository.MovimentacaoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,30 +21,52 @@ public class MovimentacaoService {
         this.movimentacaoRepository = movimentacaoRepository;
     }
 
-    public void validarMovimentacao(final Movimentacao movimentacao){
-        if (movimentacao.getProduto() == null){
-            throw new IllegalArgumentException("Produto não registrado");
+    public void validarMovimentacao(final Movimentacao movimentacao) {
+        if (movimentacao.getProduto() == null) {
+            throw new IllegalArgumentException("Produto não registrado!");
         }
 
-        if (movimentacao.getQuantidade() == null){
-            throw new IllegalArgumentException("Quanditdade do Produto não pode estar vazia!");
+        if (movimentacao.getQuantidade() == null) {
+            throw new IllegalArgumentException("Quantidade do Produto não pode estar vazia!");
         }
-        if(movimentacao.getSaida() != 0) {
+
+        if (movimentacao.getSaida() != null) {
             if (movimentacao.getSaida() > movimentacao.getQuantidade()) {
-                throw new IllegalArgumentException("Saida de Produtos não pode exceder a quantidade de Produtos");
+                throw new IllegalArgumentException("Saída de Produtos não pode exceder a quantidade de Produtos!");
             } else {
                 movimentacao.setTotalProduto(movimentacao.getQuantidade() - movimentacao.getSaida());
                 BigDecimal valorVenda = movimentacao.getValorVenda() != null ? movimentacao.getValorVenda() : BigDecimal.ZERO;
                 movimentacao.setValorTotal(BigDecimal.valueOf(movimentacao.getSaida()).multiply(valorVenda));
             }
         }
-        if(movimentacao.getValorVenda() == null){
+
+        if (movimentacao.getValorVenda() == null) {
             throw new IllegalArgumentException("Valor de venda do Produto não informado!");
         }
-        if(movimentacao.getValorCompra() == null){
+
+        if (movimentacao.getValorCompra() == null) {
             throw new IllegalArgumentException("Valor de compra do Produto não informado!");
         }
     }
+
+    public void validarMovimentacaoExistente(final Movimentacao movimentacao) {
+        if (movimentacao.getProduto() != null) {
+            throw new IllegalArgumentException("O produto não pode ser alterado!");
+        }
+
+        if (movimentacao.getSaida() != null && movimentacao.getSaida() < movimentacao.getQuantidade()) {
+            movimentacao.setTotalProduto(movimentacao.getQuantidade() - movimentacao.getSaida());
+            BigDecimal valorVenda = movimentacao.getValorVenda() != null ? movimentacao.getValorVenda() : BigDecimal.ZERO;
+            movimentacao.setValorTotal(BigDecimal.valueOf(movimentacao.getSaida()).multiply(valorVenda));
+        } else {
+            movimentacao.setSaida(null);
+            movimentacao.setTotalProduto(movimentacao.getQuantidade());
+            movimentacao.setValorTotal(BigDecimal.ZERO);
+        }
+    }
+
+
+
     public Optional<Movimentacao> findById(Long id){
         return movimentacaoRepository.findById(id);
     }
@@ -64,5 +87,20 @@ public class MovimentacaoService {
     public void cadastrar(final Movimentacao movimentacao){
         this.validarMovimentacao(movimentacao);
         this.movimentacaoRepository.save(movimentacao);
+    }
+
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
+    public void atualizar(final Long id, final Movimentacao movimentacao){
+        validarMovimentacaoExistente(movimentacao);
+        Optional<Movimentacao> movimentacaos = movimentacaoRepository.findById(id);
+
+        if (movimentacaos.isPresent()) {
+            Movimentacao movimentacao1 = movimentacaos.get();
+
+            movimentacaoRepository.save(movimentacao1);
+        } else {
+            throw new IllegalArgumentException("Id inválido!");
+        }
+
     }
 }
