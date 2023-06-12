@@ -103,4 +103,5 @@ public class MovimentacaoService {
             throw new IllegalArgumentException("Id inválido!");
         }
     }
+
 }
