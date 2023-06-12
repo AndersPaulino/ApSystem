@@ -25,15 +25,15 @@ public class MovimentacaoService {
             throw new IllegalArgumentException("Produto não registrado!");
         }
 
-        if (movimentacao.getQuantidade() == null) {
+        if (movimentacao.getEntrada() == null) {
             throw new IllegalArgumentException("Quantidade do Produto não pode estar vazia!");
         }
 
         if (movimentacao.getSaida() != null) {
-            if (movimentacao.getSaida() > movimentacao.getQuantidade()) {
+            if (movimentacao.getSaida() > movimentacao.getEntrada()) {
                 throw new IllegalArgumentException("Saída de Produtos não pode exceder a quantidade de Produtos!");
             } else {
-                movimentacao.setTotalProduto(movimentacao.getQuantidade() - movimentacao.getSaida());
+                movimentacao.setTotalProduto(movimentacao.getEntrada() - movimentacao.getSaida());
                 BigDecimal valorVenda = movimentacao.getValorVenda() != null ? movimentacao.getValorVenda() : BigDecimal.ZERO;
                 movimentacao.setValorTotal(BigDecimal.valueOf(movimentacao.getSaida()).multiply(valorVenda));
             }
@@ -53,13 +53,13 @@ public class MovimentacaoService {
             throw new IllegalArgumentException("O produto não pode ser alterado!");
         }
 
-        if (movimentacao.getSaida() != null && movimentacao.getSaida() < movimentacao.getQuantidade()) {
-            movimentacao.setTotalProduto(movimentacao.getQuantidade() - movimentacao.getSaida());
+        if (movimentacao.getSaida() != null && movimentacao.getSaida() < movimentacao.getEntrada()) {
+            movimentacao.setTotalProduto(movimentacao.getEntrada() - movimentacao.getSaida());
             BigDecimal valorVenda = movimentacao.getValorVenda() != null ? movimentacao.getValorVenda() : BigDecimal.ZERO;
             movimentacao.setValorTotal(BigDecimal.valueOf(movimentacao.getSaida()).multiply(valorVenda));
         } else {
             movimentacao.setSaida(null);
-            movimentacao.setTotalProduto(movimentacao.getQuantidade());
+            movimentacao.setTotalProduto(movimentacao.getEntrada());
             movimentacao.setValorTotal(BigDecimal.ZERO);
         }
     }
@@ -93,7 +93,7 @@ public class MovimentacaoService {
 
         if (optionalMovimentacao.isPresent()) {
             Movimentacao movimentacaoExistente = optionalMovimentacao.get();
-            movimentacaoExistente.setQuantidade(movimentacao.getQuantidade());
+            movimentacaoExistente.setEntrada(movimentacao.getEntrada());
             movimentacaoExistente.setValorVenda(movimentacao.getValorVenda());
             movimentacaoExistente.setValorCompra(movimentacao.getValorCompra());
             movimentacaoExistente.setAtivo(movimentacao.isAtivo());
@@ -103,5 +103,4 @@ public class MovimentacaoService {
             throw new IllegalArgumentException("Id inválido!");
         }
     }
-
 }

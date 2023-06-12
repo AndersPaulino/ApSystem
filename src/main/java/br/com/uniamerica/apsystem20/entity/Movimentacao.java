@@ -19,8 +19,8 @@ public class Movimentacao extends AbstractEntity{
 
     @Getter @Setter
     @Max(value = 999999)
-    @Column(name = "quantidade_produto")
-    private Integer quantidade;
+    @Column(name = "entrada_produto")
+    private Integer entrada;
 
     @Getter @Setter
     @Column(name = "saida_produto")
