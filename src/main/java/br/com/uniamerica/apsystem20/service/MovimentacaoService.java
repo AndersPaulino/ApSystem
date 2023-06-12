@@ -2,7 +2,6 @@ package br.com.uniamerica.apsystem20.service;
 
 import br.com.uniamerica.apsystem20.entity.Movimentacao;
 import br.com.uniamerica.apsystem20.entity.Produto;
-import br.com.uniamerica.apsystem20.entity.Tipo;
 import br.com.uniamerica.apsystem20.repository.MovimentacaoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -65,9 +64,7 @@ public class MovimentacaoService {
         }
     }
 
-
-
-    public Optional<Movimentacao> findById(Long id){
+    public Optional<Movimentacao> findById(Long id) {
         return movimentacaoRepository.findById(id);
     }
 
@@ -75,32 +72,35 @@ public class MovimentacaoService {
         return movimentacaoRepository.findAll();
     }
 
-    public List<Movimentacao> findByAtivo(boolean ativo){
+    public List<Movimentacao> findByAtivo(boolean ativo) {
         return movimentacaoRepository.findByAtivo(ativo);
     }
 
-    public List<Movimentacao> findByProduto(Produto produto){
+    public List<Movimentacao> findByProduto(Produto produto) {
         return movimentacaoRepository.findByProduto(produto);
     }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public void cadastrar(final Movimentacao movimentacao){
-        this.validarMovimentacao(movimentacao);
-        this.movimentacaoRepository.save(movimentacao);
+    public void cadastrar(final Movimentacao movimentacao) {
+        validarMovimentacao(movimentacao);
+        movimentacaoRepository.save(movimentacao);
     }
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public void atualizar(final Long id, final Movimentacao movimentacao){
+    public void atualizar(final Long id, final Movimentacao movimentacao) {
         validarMovimentacaoExistente(movimentacao);
-        Optional<Movimentacao> movimentacaos = movimentacaoRepository.findById(id);
+        Optional<Movimentacao> optionalMovimentacao = movimentacaoRepository.findById(id);
 
-        if (movimentacaos.isPresent()) {
-            Movimentacao movimentacao1 = movimentacaos.get();
-
-            movimentacaoRepository.save(movimentacao1);
+        if (optionalMovimentacao.isPresent()) {
+            Movimentacao movimentacaoExistente = optionalMovimentacao.get();
+            movimentacaoExistente.setQuantidade(movimentacao.getQuantidade());
+            movimentacaoExistente.setValorVenda(movimentacao.getValorVenda());
+            movimentacaoExistente.setValorCompra(movimentacao.getValorCompra());
+            movimentacaoExistente.setAtivo(movimentacao.isAtivo());
+            movimentacaoExistente.setSaida(movimentacao.getSaida());
+            movimentacaoRepository.save(movimentacaoExistente);
         } else {
             throw new IllegalArgumentException("Id inválido!");
         }
-
     }
 }
